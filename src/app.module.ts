@@ -1,5 +1,4 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
@@ -11,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { MemoriesModule } from './memories/memories.module';
 import { RolesModule } from './roles/roles.module';
 import databaseConfig from './database/config/database.config';
+import authConfig from './auth/config/auth.config';
 
 const infrastructureDatabaseModule: DynamicModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -21,7 +21,7 @@ const infrastructureDatabaseModule: DynamicModule = TypeOrmModule.forRootAsync({
 
 const configModule: DynamicModule = ConfigModule.forRoot({
   isGlobal: true,
-  load: [databaseConfig],
+  load: [databaseConfig, authConfig],
   envFilePath: ['.env'],
 });
 
@@ -35,7 +35,7 @@ const configModule: DynamicModule = ConfigModule.forRoot({
     MemoriesModule,
     RolesModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}
