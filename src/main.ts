@@ -9,7 +9,6 @@ async function bootstrap() {
     .setTitle('Vuexy Admin backend')
     .setDescription('API documentation')
     .setVersion('1.0.0')
-    .addTag('Vuexy Admin')
     .addBearerAuth()
     .build();
 
