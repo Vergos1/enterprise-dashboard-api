@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('Vuexy Admin backend')
+    .setTitle('Vuexy Admin back-end')
     .setDescription('API documentation')
     .setVersion('1.0.0')
     .addBearerAuth()
