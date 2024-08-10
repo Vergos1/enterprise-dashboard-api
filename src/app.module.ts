@@ -6,6 +6,10 @@ import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppLoggerModule } from './app-logger/app-logger.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { MemoriesModule } from './memories/memories.module';
+import { RolesModule } from './roles/roles.module';
 import databaseConfig from './database/config/database.config';
 
 const infrastructureDatabaseModule: DynamicModule = TypeOrmModule.forRootAsync({
@@ -22,7 +26,15 @@ const configModule: DynamicModule = ConfigModule.forRoot({
 });
 
 @Module({
-  imports: [configModule, infrastructureDatabaseModule, AppLoggerModule],
+  imports: [
+    configModule,
+    infrastructureDatabaseModule,
+    AppLoggerModule,
+    UsersModule,
+    AuthModule,
+    MemoriesModule,
+    RolesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
