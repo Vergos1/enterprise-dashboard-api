@@ -1,40 +1,63 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { EntityCondition } from '../utils/types/entity-condition.type';
+import { NullableType } from '../utils/types/nullable.type';
+import { User } from './domain/user';
+import { UsersRepository } from './repositories/users.repository';
+import { UserDto } from './dto/user.dto';
+import { ERROR_MESSAGES } from '../utils/constants/all-constants';
+import { GetUsersDto } from './dto/getUsers.dto';
+import { createObjectCsvStringifier } from 'csv-writer';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
-  async findAll(): Promise<UserEntity[]> {
-    return this.userRepository.find();
+  findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
+    return this.usersRepository.findOne(fields);
   }
 
-  async findOne(id: string): Promise<UserEntity> {
-    return this.userRepository.findOne({ where: { id } });
+  async findOneById(id: string): Promise<UserDto> {
+    return this.usersRepository.getUserById(id);
   }
 
-  async findOneByEmail(email: string): Promise<UserEntity | undefined> {
-    return this.userRepository.findOne({ where: { email } });
-  }
-
-  async create(user: Partial<UserEntity>): Promise<UserEntity> {
-    return this.userRepository.save(user);
-  }
-
-  async update(
-    id: string,
-    updateUserDto: Partial<UserEntity>,
-  ): Promise<UserEntity> {
-    await this.userRepository.update(id, updateUserDto);
-    return this.findOne(id);
+  async getUsers(getUsers: GetUsersDto): Promise<UserDto[]> {
+    return this.usersRepository.getUsers(
+      getUsers.search,
+      getUsers.subscriptionType,
+      getUsers.categoryId,
+    );
   }
 
   async remove(id: string): Promise<void> {
-    await this.userRepository.delete(id);
+    await this.usersRepository.delete(id);
+  }
+
+  async blockOrUnblockUser(id: string): Promise<void> {
+    const user = await this.findOneById(id);
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+    await this.usersRepository.udpdateUserStatus(id, !user.activated);
+  }
+
+  async exportUsersToCsv(getUsers: GetUsersDto): Promise<string> {
+    const users = await this.getUsers(getUsers);
+
+    const csvStringifier = createObjectCsvStringifier({
+      header: [
+        { id: 'firstName', title: 'First Name' },
+        { id: 'email', title: 'Email' },
+      ],
+    });
+
+    const records = users.map((user) => ({
+      firstName: user.profile?.firstName || '',
+      email: user.email,
+    }));
+
+    const csvContent =
+      csvStringifier.getHeaderString() +
+      csvStringifier.stringifyRecords(records);
+    return csvContent;
   }
 }

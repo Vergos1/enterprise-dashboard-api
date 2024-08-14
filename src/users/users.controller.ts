@@ -1,4 +1,63 @@
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Post,
+  Param,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiCreatedResponse,
+} from '@nestjs/swagger';
+import { LocalGuard } from 'src/auth/guards/local.guard';
+import { UsersService } from './users.service';
+import { User } from './domain/user';
+import { UserDto } from './dto/user.dto';
+import { GetUsersDto } from './dto/getUsers.dto';
 
-@Controller('user')
-export class UsersController {}
+@ApiTags('Admin User Management')
+@Controller('users')
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
+@UseInterceptors(ClassSerializerInterceptor)
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Search and filter users' })
+  @ApiOkResponse({ description: 'Get filtered users list', type: [UserDto] })
+  async getUsers(
+    @Query(ValidationPipe) query: GetUsersDto,
+  ): Promise<UserDto[]> {
+    return this.usersService.getUsers(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user by id' })
+  @ApiOkResponse({ description: 'Get user by id' })
+  async getUserById(@Param('id') id: string): Promise<UserDto> {
+    return this.usersService.findOneById(id);
+  }
+
+  @Get('export')
+  @ApiOperation({ summary: 'Export filtered users to CSV' })
+  async exportUsersToCsv(
+    @Query(ValidationPipe) query: GetUsersDto,
+  ): Promise<string> {
+    return await this.usersService.exportUsersToCsv(query);
+  }
+
+  @Post('status/:id')
+  @ApiOperation({ summary: 'Block/unblock user' })
+  @ApiCreatedResponse({ description: 'User blocked/unblocked successful' })
+  async changeUserStatus(@Param('id') id: string): Promise<void> {
+    return this.usersService.blockOrUnblockUser(id);
+  }
+}
