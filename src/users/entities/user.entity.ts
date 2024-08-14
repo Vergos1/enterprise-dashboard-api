@@ -25,7 +25,8 @@ export type IUserRelations =
   name: 'user',
 })
 export class UserEntity {
-  @PrimaryGeneratedColumn('uuid') id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ unique: true, nullable: false })
   email: string;
@@ -124,5 +125,5 @@ export class UserEntity {
   preferences: PreferencesEntity[];
 
   @OneToOne(() => TrustedContactEntity, (trustedContact) => trustedContact.user)
-  trustedContact: ProfileEntity;
+  trustedContact: TrustedContactEntity;
 }
