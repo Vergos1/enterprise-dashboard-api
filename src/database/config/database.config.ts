@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { DatabaseConfig } from './database.config.types';
-import { validateConfig } from '../../utils/types/validate.config';
+import { validateConfig } from '../../utils/validate.config';
 import {
   IsOptional,
   IsInt,
