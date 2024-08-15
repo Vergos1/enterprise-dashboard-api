@@ -9,7 +9,9 @@ describe('ContentManagementController', () => {
       controllers: [ContentManagementController],
     }).compile();
 
-    controller = module.get<ContentManagementController>(ContentManagementController);
+    controller = module.get<ContentManagementController>(
+      ContentManagementController,
+    );
   });
 
   it('should be defined', () => {
