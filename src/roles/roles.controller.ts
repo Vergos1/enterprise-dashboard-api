@@ -19,8 +19,6 @@ import { ERROR_MESSAGES } from 'src/utils/constants/all-constants';
 
 @ApiTags('Admin Roles Management')
 @Controller('roles')
-@UseGuards(JwtGuard)
-@ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
@@ -37,6 +35,8 @@ export class RolesController {
   }
 
   @Post('remove-admin-role-for/:userId')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Remove admin role for user' })
   @ApiResponse({
     status: 201,
