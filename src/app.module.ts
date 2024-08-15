@@ -9,6 +9,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MemoriesModule } from './memories/memories.module';
 import { RolesModule } from './roles/roles.module';
+import { ContentManagementModule } from './content-management/content-management.module';
+import { CategoriesModule } from './categories/categories.module';
 import databaseConfig from './database/config/database.config';
 import authConfig from './auth/config/auth.config';
 
@@ -34,6 +36,8 @@ const configModule: DynamicModule = ConfigModule.forRoot({
     AuthModule,
     MemoriesModule,
     RolesModule,
+    ContentManagementModule,
+    CategoriesModule,
   ],
   controllers: [],
   providers: [AppService],
