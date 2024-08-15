@@ -19,19 +19,20 @@ import {
 } from '@nestjs/swagger';
 import { LocalGuard } from 'src/auth/guards/local.guard';
 import { UsersService } from './users.service';
-import { User } from './domain/user';
 import { UserDto } from './dto/user.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
 
 @ApiTags('Admin User Management')
 @Controller('users')
+// @UseGuards(LocalGuard)
+// @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Search and filter users' })
+  @ApiOperation({ summary: 'Search and filter usersssss' })
   @ApiOkResponse({ description: 'Get filtered users list', type: [UserDto] })
   async getUsers(
     @Query(ValidationPipe) query: GetUsersDto,

@@ -14,6 +14,8 @@ import { ProfileEntity } from './profile.entity';
 import { PreferencesEntity } from './preferences.entity';
 import { TrustedContactEntity } from './trusted-contacts.entity';
 import { Exclude } from 'class-transformer';
+import { UserStatus } from '../constants/user-status.enum';
+import { Role } from '../../roles/roles.enum';
 
 export type IUserRelations =
   | 'friends'
@@ -31,7 +33,6 @@ export class UserEntity {
   @Column({ unique: true, nullable: false })
   email: string;
 
-  @Exclude()
   @Column({ nullable: true })
   password: string;
 
@@ -62,6 +63,16 @@ export class UserEntity {
 
   @Column({ nullable: false, default: false })
   activated: boolean;
+
+  @Column({ nullable: true, default: UserStatus.Active })
+  status: UserStatus;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.Admin,
+  })
+  role: Role;
 
   @Exclude()
   @Column({ nullable: true, default: '' })

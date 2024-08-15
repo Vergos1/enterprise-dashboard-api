@@ -11,6 +11,8 @@ import {
 } from 'class-validator';
 
 import { Frequency, WeekDays } from '../entities/preferences.entity';
+import { Role } from '../../roles/roles.enum';
+import { UserStatus } from '../constants/user-status.enum';
 
 // Profile DTO
 export class ProfileDto {
@@ -144,6 +146,18 @@ export class UserDto {
   })
   @IsBoolean()
   activated: boolean;
+
+  @ApiProperty({
+    description: 'The status of the user',
+    example: 'Active',
+  })
+  status: UserStatus;
+
+  @ApiProperty({
+    description: 'The role of the user',
+    example: 'User',
+  })
+  role: Role;
 
   @ApiProperty({
     type: ProfileDto,

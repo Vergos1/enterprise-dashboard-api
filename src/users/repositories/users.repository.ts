@@ -9,6 +9,9 @@ import { NullableType } from '../../utils/types/nullable.type';
 import { IUserRelations } from '../entities/user.entity';
 import { UserDto } from '../dto/user.dto';
 import { Frequency } from '../entities/preferences.entity';
+import { FavoritesFilter } from '../constants/favorites-filter.enum';
+import { UserStatus } from '../constants/user-status.enum';
+import { Role } from '../../roles/roles.enum';
 
 @Injectable()
 export class UsersRepository {
@@ -81,6 +84,22 @@ export class UsersRepository {
     return await this.usersRepository.delete(id);
   }
 
+  async userHasRole(id: string, role: Role): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user.role === role;
+  }
+
+  async updateUserRole(id: string, role: Role): Promise<void> {
+    await this.usersRepository.update(id, { role });
+  }
+
   async getUserById(id: string): Promise<UserDto> {
     const entity = await this.usersRepository.findOne({
       where: { id },
@@ -91,20 +110,23 @@ export class UsersRepository {
     return entity;
   }
 
-  async udpdateUserStatus(id: string, active: boolean): Promise<void> {
-    await this.usersRepository.update(id, { activated: active });
+  async udpdateUserStatus(id: string, status: UserStatus): Promise<void> {
+    await this.usersRepository.update(id, { status });
   }
 
   async getUsers(
     search?: string,
     subscriptionType?: Frequency,
     categoryId?: string,
+    favoritesFilter?: FavoritesFilter,
+    status?: UserStatus,
   ): Promise<UserEntity[]> {
     const queryBuilder = this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.profile', 'profile')
       .leftJoinAndSelect('user.preferences', 'preferences')
-      .leftJoinAndSelect('preferences.inspirations', 'inspirations');
+      .leftJoinAndSelect('preferences.inspirations', 'inspirations')
+      .leftJoinAndSelect('user.favorites', 'favorites');
 
     if (search) {
       queryBuilder.andWhere(
@@ -123,6 +145,18 @@ export class UsersRepository {
       queryBuilder.andWhere('inspirations.categoryId = :categoryId', {
         categoryId,
       });
+    }
+
+    if (favoritesFilter) {
+      if (favoritesFilter === FavoritesFilter.Empty) {
+        queryBuilder.andWhere('favorites.id IS NULL');
+      } else if (favoritesFilter === FavoritesFilter.Include) {
+        queryBuilder.andWhere('favorites.id IS NOT NULL');
+      }
+    }
+
+    if (status) {
+      queryBuilder.andWhere('user.status = :status', { status });
     }
 
     return queryBuilder.getMany();

@@ -7,6 +7,7 @@ import { UserDto } from './dto/user.dto';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { createObjectCsvStringifier } from 'csv-writer';
+import { UserStatus } from './constants/user-status.enum';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +26,8 @@ export class UsersService {
       getUsers.search,
       getUsers.subscriptionType,
       getUsers.categoryId,
+      getUsers.favoritesFilter,
+      getUsers.status,
     );
   }
 
@@ -37,7 +40,11 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
-    await this.usersRepository.udpdateUserStatus(id, !user.activated);
+    const newUserStatus: UserStatus =
+      user.status === UserStatus.Blocked
+        ? UserStatus.Active
+        : UserStatus.Blocked;
+    await this.usersRepository.udpdateUserStatus(id, newUserStatus);
   }
 
   async exportUsersToCsv(getUsers: GetUsersDto): Promise<string> {
