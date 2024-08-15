@@ -1,0 +1,53 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { QuestionEntity } from './question.entity';
+
+@Entity({
+  name: 'category',
+})
+export class CategoryEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
+  name: string;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    name: 'created_at',
+    nullable: true,
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+    name: 'updated_at',
+    nullable: true,
+  })
+  updatedAt: Date;
+
+  @ManyToOne(() => CategoryEntity, (category) => category.subcategories, {
+    nullable: true,
+  })
+  parentCategory: CategoryEntity;
+
+  @OneToMany(() => CategoryEntity, (category) => category.parentCategory, {
+    cascade: true,
+  })
+  subcategories: CategoryEntity[];
+
+  @OneToMany(() => QuestionEntity, (question) => question.category, {
+    cascade: true,
+  })
+  questions: QuestionEntity[];
+}
