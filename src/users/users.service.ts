@@ -8,6 +8,7 @@ import { ERROR_MESSAGES } from '../utils/constants/all-constants';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { createObjectCsvStringifier } from 'csv-writer';
 import { UserStatus } from './constants/user-status.enum';
+import { UserInListDto } from './dto/userInList.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,11 +22,11 @@ export class UsersService {
     return this.usersRepository.getUserById(id);
   }
 
-  async getUsers(getUsers: GetUsersDto): Promise<UserDto[]> {
+  async getUsers(getUsers: GetUsersDto): Promise<UserInListDto[]> {
     return this.usersRepository.getUsers(
       getUsers.search,
       getUsers.subscriptionType,
-      getUsers.categoryId,
+      getUsers.categories,
       getUsers.favoritesFilter,
       getUsers.status,
     );
@@ -58,7 +59,7 @@ export class UsersService {
     });
 
     const records = users.map((user) => ({
-      firstName: user.profile?.firstName || '',
+      firstName: user.firstName || '',
       email: user.email,
     }));
 

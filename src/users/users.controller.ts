@@ -21,6 +21,7 @@ import { LocalGuard } from 'src/auth/guards/local.guard';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
+import { UserInListDto } from './dto/userInList.dto';
 
 @ApiTags('Admin User Management')
 @Controller('users')
@@ -33,10 +34,13 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Search and filter usersssss' })
-  @ApiOkResponse({ description: 'Get filtered users list', type: [UserDto] })
+  @ApiOkResponse({
+    description: 'Get filtered users list',
+    type: [UserInListDto],
+  })
   async getUsers(
     @Query(ValidationPipe) query: GetUsersDto,
-  ): Promise<UserDto[]> {
+  ): Promise<UserInListDto[]> {
     return this.usersService.getUsers(query);
   }
 

@@ -12,6 +12,7 @@ import { Frequency } from '../entities/preferences.entity';
 import { FavoritesFilter } from '../constants/favorites-filter.enum';
 import { UserStatus } from '../constants/user-status.enum';
 import { Role } from '../../roles/roles.enum';
+import { UserInListDto } from '../dto/userInList.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -117,48 +118,72 @@ export class UsersRepository {
   async getUsers(
     search?: string,
     subscriptionType?: Frequency,
-    categoryId?: string,
+    categories?: string[],
     favoritesFilter?: FavoritesFilter,
     status?: UserStatus,
-  ): Promise<UserEntity[]> {
-    const queryBuilder = this.usersRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.profile', 'profile')
-      .leftJoinAndSelect('user.preferences', 'preferences')
-      .leftJoinAndSelect('preferences.inspirations', 'inspirations')
-      .leftJoinAndSelect('user.favorites', 'favorites');
+  ): Promise<UserInListDto[]> {
+    try {
+      const queryBuilder = this.usersRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .leftJoinAndSelect('user.preferences', 'preferences')
+        .leftJoinAndSelect('preferences.inspirations', 'inspirations')
+        .leftJoinAndSelect('user.favorites', 'favorites');
 
-    if (search) {
-      queryBuilder.andWhere(
-        'profile.firstName LIKE :search OR profile.lastName LIKE :search OR user.email LIKE :search',
-        { search: `%${search}%` },
-      );
-    }
-
-    if (subscriptionType) {
-      queryBuilder.andWhere(':subscriptionType = ANY(preferences.frequency)', {
-        subscriptionType,
-      });
-    }
-
-    if (categoryId) {
-      queryBuilder.andWhere('inspirations.categoryId = :categoryId', {
-        categoryId,
-      });
-    }
-
-    if (favoritesFilter) {
-      if (favoritesFilter === FavoritesFilter.Empty) {
-        queryBuilder.andWhere('favorites.id IS NULL');
-      } else if (favoritesFilter === FavoritesFilter.Include) {
-        queryBuilder.andWhere('favorites.id IS NOT NULL');
+      // Search by first name, last name, or email
+      if (search) {
+        queryBuilder.andWhere(
+          '(profile.firstName LIKE :search OR profile.lastName LIKE :search OR user.email LIKE :search)',
+          { search: `%${search}%` },
+        );
       }
-    }
 
-    if (status) {
-      queryBuilder.andWhere('user.status = :status', { status });
-    }
+      // Filter by subscription type (checks for any matching frequency)
+      if (subscriptionType) {
+        queryBuilder.andWhere(
+          ':subscriptionType = ANY(preferences.frequency)',
+          {
+            subscriptionType,
+          },
+        );
+      }
 
-    return queryBuilder.getMany();
+      // Filter by multiple categories (checks if any inspiration category matches)
+      if (categories && categories.length > 0) {
+        queryBuilder.andWhere('inspirations.categoryId IN (:...categories)', {
+          categories,
+        });
+      }
+
+      // Filter by favorites
+      if (favoritesFilter) {
+        if (favoritesFilter === FavoritesFilter.Empty) {
+          queryBuilder.andWhere('favorites.id IS NULL');
+        } else if (favoritesFilter === FavoritesFilter.Include) {
+          queryBuilder.andWhere('favorites.id IS NOT NULL');
+        }
+      }
+
+      // Filter by user status
+      if (status) {
+        queryBuilder.andWhere('user.status = :status', { status });
+      }
+
+      // Execute query
+      const users = await queryBuilder.getMany();
+
+      return users.map((user) => ({
+        id: user.id,
+        firstName: user.profile?.firstName || null,
+        lastName: user.profile?.lastName || null,
+        email: user.email,
+        avatar: user.profile?.avatar || null,
+        role: user.role,
+        status: user.status,
+      }));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw new Error('An error occurred while fetching users.');
+    }
   }
 }

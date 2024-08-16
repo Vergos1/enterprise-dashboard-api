@@ -1,4 +1,11 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsArray,
+  ArrayNotEmpty,
+  IsUUID,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Frequency } from '../entities/preferences.entity';
 import { FavoritesFilter } from '../constants/favorites-filter.enum';
@@ -22,10 +29,15 @@ export class GetUsersDto {
   })
   subscriptionType?: Frequency;
 
-  @ApiPropertyOptional({ description: 'Filter by category ID' })
+  @ApiPropertyOptional({
+    description: 'Filter by an array of category IDs',
+    type: [String],
+  })
   @IsOptional()
-  @IsString()
-  categoryId?: string;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsUUID('4', { each: true })
+  categories?: string[];
 
   @ApiPropertyOptional({
     description: 'Filter by favorites status: all, empty, include',
