@@ -1,19 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../entities/user.entity';
-import { User } from '../domain/user';
-import { UserMapper } from '../mappers/user.mapper';
+import { UserEntity } from '../../entities/user.entity';
+import { User } from '../../domain/user';
+import { UserMapper } from '../../mappers/user.mapper';
 import { DeleteResult, FindOptionsWhere, Repository } from 'typeorm';
-import { EntityCondition } from '../../utils/types/entity-condition.type';
-import { NullableType } from '../../utils/types/nullable.type';
-import { IUserRelations } from '../entities/user.entity';
-import { UserDto } from '../dto/user.dto';
-import { Frequency } from '../entities/preferences.entity';
-import { FavoritesFilter } from '../constants/favorites-filter.enum';
-import { UserStatus } from '../constants/user-status.enum';
-import { Role } from '../../roles/roles.enum';
-import { UserInListDto } from '../dto/userInList.dto';
-
+import { EntityCondition } from '../../../utils/types/entity-condition.type';
+import { NullableType } from '../../../utils/types/nullable.type';
+import { IUserRelations } from '../../entities/user.entity';
+import { UserDto } from '../../dto/user.dto';
+import { Frequency } from '../../entities/preferences.entity';
+import { FavoritesFilter } from '../../constants/favorites-filter.enum';
+import { UserStatus } from '../../constants/user-status.enum';
+import { Role } from '../../../roles/roles.enum';
+import { UserInListDto } from '../../dto/userInList.dto';
 @Injectable()
 export class UsersRepository {
   constructor(
@@ -111,8 +110,40 @@ export class UsersRepository {
     return entity;
   }
 
+  async getUserInfoById(id: string): Promise<UserEntity> {
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .where('user.id = :id', { id });
+
+    return queryBuilder.getOne();
+  }
+
+  async getVoiceRecordsLength(userId: string): Promise<number> {
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.memories', 'memories')
+      .select('SUM(memories.audioRecordingLength)', 'totalVoiceLength')
+      .where('user.id = :userId', { userId });
+
+    const result = await queryBuilder.getRawOne();
+    return parseInt(result.totalVoiceLength || '0', 10);
+  }
+
   async udpdateUserStatus(id: string, status: UserStatus): Promise<void> {
     await this.usersRepository.update(id, { status });
+  }
+
+  async getQuestionsAmount(userId: string): Promise<number> {
+    const queryBuilder = this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.preferences', 'preferences')
+      .leftJoin('preferences.inspirations', 'inspirations')
+      .select('COUNT(inspirations.id)', 'questionsAmount')
+      .where('user.id = :userId', { userId });
+
+    const result = await queryBuilder.getRawOne();
+    return parseInt(result.questionsAmount || '0', 10);
   }
 
   async getUsers(
@@ -168,6 +199,15 @@ export class UsersRepository {
       if (status) {
         queryBuilder.andWhere('user.status = :status', { status });
       }
+
+      // Order by role: admins first
+      queryBuilder.addOrderBy(
+        `CASE 
+         WHEN user.role = 'admin' THEN 1 
+         ELSE 2 
+       END`,
+        'ASC',
+      );
 
       // Execute query
       const users = await queryBuilder.getMany();
