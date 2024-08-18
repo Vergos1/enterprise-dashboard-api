@@ -22,6 +22,7 @@ import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { UserInListDto } from './dto/userInList.dto';
+import { UserInfoDto } from './dto/userInfo.dto';
 
 @ApiTags('Admin User Management')
 @Controller('users')
@@ -33,7 +34,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Search and filter usersssss' })
+  @ApiOperation({ summary: 'Search and filter users' })
   @ApiOkResponse({
     description: 'Get filtered users list',
     type: [UserInListDto],
@@ -46,9 +47,9 @@ export class UsersController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get user by id' })
-  @ApiOkResponse({ description: 'Get user by id' })
-  async getUserById(@Param('id') id: string): Promise<UserDto> {
-    return this.usersService.findOneById(id);
+  @ApiOkResponse({ description: 'Get user by id', type: UserInfoDto })
+  async getUserById(@Param('id') id: string): Promise<UserInfoDto> {
+    return this.usersService.gelUserInfoById(id);
   }
 
   @Get('export')

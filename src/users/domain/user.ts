@@ -1,5 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { UserEntity } from '../entities/user.entity';
+import { Role } from '../../roles/roles.enum';
+import { UserStatus } from '../constants/user-status.enum';
 
 export class User {
   id?: string;
@@ -25,4 +27,8 @@ export class User {
   emailToken?: string;
 
   friends?: UserEntity[];
+
+  status?: UserStatus;
+
+  role?: Role;
 }

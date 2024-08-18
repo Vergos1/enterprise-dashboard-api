@@ -2,17 +2,24 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityCondition } from '../utils/types/entity-condition.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from './domain/user';
-import { UsersRepository } from './repositories/users.repository';
+import { UsersRepository } from './repositories/users-repository/users.repository';
 import { UserDto } from './dto/user.dto';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { createObjectCsvStringifier } from 'csv-writer';
 import { UserStatus } from './constants/user-status.enum';
 import { UserInListDto } from './dto/userInList.dto';
+import { UserInfoDto } from './dto/userInfo.dto';
+import { UserInspirationsRepository } from './repositories/user-inspirations-repository/userInspirations.repository';
+import { CategoriesRepository } from '../categories/repositories/categories.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly userInspirationsRepository: UserInspirationsRepository,
+    private readonly categoriesRepository: CategoriesRepository,
+  ) {}
 
   findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
     return this.usersRepository.findOne(fields);
@@ -67,5 +74,40 @@ export class UsersService {
       csvStringifier.getHeaderString() +
       csvStringifier.stringifyRecords(records);
     return csvContent;
+  }
+
+  async gelUserInfoById(id: string): Promise<UserInfoDto> {
+    const user = await this.usersRepository.getUserInfoById(id);
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+    const { id: userId, email, status, profile, trustedContact } = user;
+    const { firstName, lastName, birthDate } = profile;
+
+    const voiceRecordsLength =
+      await this.usersRepository.getVoiceRecordsLength(userId);
+
+    const questionsAmount =
+      await this.usersRepository.getQuestionsAmount(userId);
+
+    const categoriesIds =
+      await this.userInspirationsRepository.getUserCategoriesIds(userId);
+    const categiories =
+      await this.categoriesRepository.getCategoriesByIds(categoriesIds);
+
+    return {
+      id,
+      email,
+      firstName,
+      lastName,
+      status,
+      birthDate,
+      voiceRecordsLength,
+      questionsAmount,
+      categories: categiories.map((category) => {
+        return { id: category.id, name: category.name };
+      }),
+      trustedContact,
+    };
   }
 }
