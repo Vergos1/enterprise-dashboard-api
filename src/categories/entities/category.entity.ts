@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionEntity } from './question.entity';
+import { QuestionEntity } from '../../questions/entities/question.entity';
 
 @Entity({
   name: 'category',
