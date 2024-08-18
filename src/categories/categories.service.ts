@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CategoriesRepository } from './repositories/categories.repository';
 import { CategoryEntity } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -68,21 +72,40 @@ export class CategoriesService {
     id: string,
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<CategoryEntity> {
-    // TODO: Implement the updateCategory method
-    // Need to update old parent category subcategories array and new parent category subcategories array
     const { name, parentCategoryId } = updateCategoryDto;
-
     const category = await this.getCategoryById(id);
+    category.name = name || category.name;
 
-    let parentCategory: CategoryEntity = null;
-
-    if (parentCategoryId) {
-      parentCategory = await this.getParentCategoryById(parentCategoryId);
+    if (parentCategoryId === id) {
+      throw new BadRequestException('Category cannot be its own parent.');
     }
 
-    category.name = name || category.name;
-    // category.parentCategory = parentCategory || category.parentCategory;
+    if (parentCategoryId && parentCategoryId === category.parentCategory?.id) {
+      return await this.categoriesRepository.update(id, category);
+    }
 
-    return await this.categoriesRepository.update(id, category);
+    const newParentCategory =
+      await this.getParentCategoryById(parentCategoryId);
+    const oldParentCategory = await this.getCategoryById(
+      category.parentCategory?.id,
+    );
+
+    category.parentCategory = newParentCategory || category.parentCategory;
+
+    const result = await this.categoriesRepository.update(id, category);
+
+    newParentCategory.subcategories.push(category);
+    await this.categoriesRepository.update(
+      newParentCategory.id,
+      newParentCategory,
+    );
+
+    oldParentCategory.subcategories = oldParentCategory.subcategories.filter(
+      (subCategory) => subCategory.id !== category.id,
+    );
+
+    await this.categoriesRepository.update(id, category);
+
+    return result;
   }
 }
