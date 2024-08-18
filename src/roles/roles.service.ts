@@ -6,7 +6,7 @@ import {
 import { Role } from './roles.enum';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
 import { AppLoggerService } from '../app-logger/app-logger.service';
-import { UsersRepository } from '../users/repositories/users.repository';
+import { UsersRepository } from '../users/repositories/users-repository/users.repository';
 import { UserEntity } from 'src/users/entities/user.entity';
 
 @Injectable()
