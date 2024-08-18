@@ -13,6 +13,7 @@ import {
 import { Frequency, WeekDays } from '../entities/preferences.entity';
 import { Role } from '../../roles/roles.enum';
 import { UserStatus } from '../constants/user-status.enum';
+import { TrustedContactDto } from './trustedContact.dto';
 
 // Profile DTO
 export class ProfileDto {
@@ -74,31 +75,6 @@ export class PreferencesDto {
   @IsOptional()
   @IsString()
   time?: string;
-}
-
-// TrustedContact DTO
-export class TrustedContactDto {
-  @ApiProperty({
-    description: 'The name of the trusted contact',
-    example: 'Jane Doe',
-  })
-  @IsString()
-  name: string;
-
-  @ApiProperty({
-    description: 'The email of the trusted contact',
-    example: 'trusted@example.com',
-  })
-  @IsString()
-  email: string;
-
-  @ApiProperty({
-    description: 'The relationship with the user',
-    example: 'Friend',
-  })
-  @IsOptional()
-  @IsString()
-  relation?: string;
 }
 
 export class UserDto {
