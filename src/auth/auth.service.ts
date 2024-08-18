@@ -10,6 +10,7 @@ import { RolesService } from '../roles/roles.service';
 import { AuthDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
+import { UserStatus } from 'src/users/constants/user-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,9 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+    if (user.status !== UserStatus.Active) {
+      throw new ForbiddenException(ERROR_MESSAGES.DONT_HAVE_PERMISSION);
     }
     if (await bcrypt.compare(password, user.password)) {
       const hasAdminRole = await this.rolesService.userHasAdminRole(user.id);
