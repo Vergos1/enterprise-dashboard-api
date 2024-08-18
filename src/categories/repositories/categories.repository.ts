@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Repository, In } from 'typeorm';
 import { CategoryEntity } from '../entities/category.entity';
 
 @Injectable()
@@ -41,5 +41,11 @@ export class CategoriesRepository {
   async deleteCategory(id: string): Promise<void> {
     // Deleting the category will automatically trigger the cascade delete for subcategories and questions
     await this.categoryEntityRepository.delete(id);
+  }
+
+  async getCategoriesByIds(categoryIds: string[]): Promise<CategoryEntity[]> {
+    return await this.categoryEntityRepository.find({
+      where: { id: In(categoryIds) },
+    });
   }
 }
