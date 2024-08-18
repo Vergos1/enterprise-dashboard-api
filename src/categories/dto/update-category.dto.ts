@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, IsArray } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateCategoryDto {
@@ -8,7 +8,7 @@ export class UpdateCategoryDto {
     required: true,
   })
   @IsString()
-  name: string;
+  name?: string;
 
   @ApiProperty({
     description: 'The UUID of the parent category (optional)',
@@ -18,17 +18,4 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsUUID()
   parentCategoryId?: string;
-
-  @ApiProperty({
-    description: 'List of subcategory UUIDs (optional)',
-    example: [
-      '123e4567-e89b-12d3-a456-426614174000',
-      '123e4567-e89b-12d3-a456-426614174001',
-    ],
-    required: false,
-  })
-  @IsOptional()
-  @IsArray()
-  @IsUUID('all', { each: true })
-  subcategoryIds?: string[];
 }
