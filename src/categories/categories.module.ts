@@ -7,5 +7,6 @@ import { CategoriesRepositoryModule } from './repositories/categories.repository
   imports: [CategoriesRepositoryModule],
   controllers: [CategoriesController],
   providers: [CategoriesService],
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

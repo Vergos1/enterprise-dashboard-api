@@ -20,6 +20,7 @@ import { CategoryDto } from './dto/category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UuidParamDto } from './dto/uuid-param.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryInListDto } from './dto/category-in-list.dto';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -28,13 +29,16 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
-  @ApiOkResponse({ description: 'Return all categories', type: [CategoryDto] })
-  async getCategories(): Promise<CategoryDto[]> {
+  @ApiOkResponse({
+    description: 'Return all categories',
+    type: [CategoryInListDto],
+  })
+  async getCategories(): Promise<CategoryInListDto[]> {
     return await this.categoriesService.getCategories();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get category by ID' })
+  @ApiOperation({ summary: 'Get category by ID with questions array' })
   @ApiOkResponse({
     description: 'Successfully retrieved category.',
     type: [CategoryDto],
