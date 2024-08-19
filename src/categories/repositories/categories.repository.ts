@@ -21,7 +21,7 @@ export class CategoriesRepository {
   async getById(id: string): Promise<CategoryEntity> {
     return await this.categoryEntityRepository.findOne({
       where: { id },
-      relations: { subcategories: true },
+      relations: { subcategories: true, questions: true },
     });
   }
 
