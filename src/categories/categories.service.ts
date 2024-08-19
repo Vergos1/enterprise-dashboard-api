@@ -7,6 +7,7 @@ import { CategoriesRepository } from './repositories/categories.repository';
 import { CategoryEntity } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryDto } from './dto/category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -19,7 +20,7 @@ export class CategoriesService {
   async getCategoryById(
     id: string,
     errorMessage?: string,
-  ): Promise<CategoryEntity> {
+  ): Promise<CategoryDto> {
     const category = await this.categoriesRepository.getById(id);
 
     if (!category) {
