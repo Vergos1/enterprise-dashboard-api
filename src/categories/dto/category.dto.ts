@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
+import { QuestionDto } from 'src/questions/dto/question.dto';
+import { CategoryEntity } from '../entities/category.entity';
 
 export class CategoryDto {
   @ApiProperty({
@@ -21,9 +23,8 @@ export class CategoryDto {
     example: '456e7890-e89b-12d3-a456-426614174111',
     required: false,
   })
-  @IsOptional()
   @IsUUID()
-  parentCategoryId?: string;
+  parentCategory: CategoryEntity | null;
 
   @ApiProperty({
     description: 'Timestamp when the category was created',
@@ -42,6 +43,12 @@ export class CategoryDto {
     type: [CategoryDto],
     required: false,
   })
-  @IsOptional()
-  subcategories?: CategoryDto[];
+  subcategories: CategoryEntity[];
+
+  @ApiProperty({
+    description: 'The questions associated with this category',
+    type: [QuestionDto],
+    required: false,
+  })
+  questions: QuestionDto[];
 }
