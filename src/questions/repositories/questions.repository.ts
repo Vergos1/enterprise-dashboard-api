@@ -15,6 +15,12 @@ export class QuestionsRepository {
     @InjectRepository(QuestionEntity)
     private readonly questionEntityRepository: Repository<QuestionEntity>,
   ) {}
+
+  async create(question: Partial<QuestionEntity>): Promise<QuestionEntity> {
+    const newQuestion = this.questionEntityRepository.create(question);
+    return await this.questionEntityRepository.save(newQuestion);
+  }
+
   async getByCategoryId(
     categoryId: string,
     paginationOptions: PaginationOptionsDTO,
@@ -48,5 +54,17 @@ export class QuestionsRepository {
       .createQueryBuilder('question')
       .where('question.id = :id', { id })
       .getOne();
+  }
+
+  async update(
+    id: string,
+    question: Partial<QuestionEntity>,
+  ): Promise<QuestionEntity> {
+    await this.questionEntityRepository.update(id, question);
+    return await this.getById(id);
+  }
+
+  async deleteQuestion(id: string): Promise<void> {
+    await this.questionEntityRepository.delete(id);
   }
 }
