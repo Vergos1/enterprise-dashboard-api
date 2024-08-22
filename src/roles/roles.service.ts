@@ -42,7 +42,7 @@ export class RolesService {
 
   async removeAdminRole(userId: string): Promise<void> {
     const user = await this.getUserById(userId);
-    if (user.role === Role.Admin) {
+    if (user.role === Role.User) {
       throw new ForbiddenException(ERROR_MESSAGES.USER_ALREADY_USER);
     }
 
