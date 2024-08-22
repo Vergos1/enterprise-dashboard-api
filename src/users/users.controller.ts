@@ -17,17 +17,16 @@ import {
   ApiUnauthorizedResponse,
   ApiCreatedResponse,
 } from '@nestjs/swagger';
-import { LocalGuard } from 'src/auth/guards/local.guard';
 import { UsersService } from './users.service';
-import { UserDto } from './dto/user.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { UserInListDto } from './dto/userInList.dto';
 import { UserInfoDto } from './dto/userInfo.dto';
+import { JwtGuard } from 'src/auth/guards/jwt.quard';
 
 @ApiTags('Admin User Management')
 @Controller('users')
-// @UseGuards(LocalGuard)
-// @ApiBearerAuth()
+@UseGuards(JwtGuard)
+@ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
