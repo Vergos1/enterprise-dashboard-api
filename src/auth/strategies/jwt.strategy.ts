@@ -30,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
   async validate(payload: JwtPayload) {
-    const user = await this.usersService.findOne({ id: payload.id });
+    const user = await this.usersService.findOneById(payload.id);
 
     if (user.status !== UserStatus.Active) {
       throw new ForbiddenException(ERROR_MESSAGES.DONT_HAVE_PERMISSION);
@@ -39,7 +39,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    delete user.password;
     return user;
   }
 }

@@ -12,6 +12,7 @@ import { UserInListDto } from './dto/userInList.dto';
 import { UserInfoDto } from './dto/userInfo.dto';
 import { UserInspirationsRepository } from './repositories/user-inspirations-repository/userInspirations.repository';
 import { CategoriesRepository } from '../categories/repositories/categories.repository';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +28,10 @@ export class UsersService {
 
   async findOneById(id: string): Promise<UserDto> {
     return this.usersRepository.getUserById(id);
+  }
+
+  async findOneByEmail(email: string): Promise<UserEntity> {
+    return this.usersRepository.getUserByEmail(email);
   }
 
   async getUsers(getUsers: GetUsersDto): Promise<UserInListDto[]> {

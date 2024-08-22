@@ -7,13 +7,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RolesService } from './roles.service';
-import {
-  Post,
-  Param,
-  UseGuards,
-  Controller,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Post, Param, UseGuards, Controller } from '@nestjs/common';
 import { JwtGuard } from '../auth/guards/jwt.quard';
 import { ERROR_MESSAGES } from 'src/utils/constants/all-constants';
 
@@ -30,7 +24,7 @@ export class RolesController {
     description: 'Admin role assigned to user',
   })
   @ApiNotFoundResponse({ description: ERROR_MESSAGES.USER_NOT_FOUND })
-  async assignRole(@Param('userId', ParseIntPipe) id: string) {
+  async assignRole(@Param('id') id: string) {
     return await this.rolesService.assignAdminRole(id);
   }
 
@@ -43,7 +37,7 @@ export class RolesController {
     description: 'Admin role removed for user',
   })
   @ApiNotFoundResponse({ description: ERROR_MESSAGES.USER_NOT_FOUND })
-  async removeRole(@Param('userId', ParseIntPipe) id: string) {
+  async removeRole(@Param('id') id: string) {
     return await this.rolesService.removeAdminRole(id);
   }
 }

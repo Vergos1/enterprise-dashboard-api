@@ -37,7 +37,7 @@ export class RolesService {
 
     await this.userRepository.updateUserRole(user.id, Role.Admin);
 
-    this.logger.log(`Admin role assigned to user ${userId}.`, 'RolesService');
+    this.logger.log(`Admin role assigned to user ${user.id}.`, 'RolesService');
   }
 
   async removeAdminRole(userId: string): Promise<void> {

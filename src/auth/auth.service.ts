@@ -21,8 +21,7 @@ export class AuthService {
   ) {}
 
   async validateUser({ email, password }: AuthDto): Promise<any> {
-    const user = await this.usersService.findOne({ email });
-
+    const user = await this.usersService.findOneByEmail(email);
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
@@ -34,8 +33,17 @@ export class AuthService {
       if (!hasAdminRole) {
         throw new ForbiddenException(ERROR_MESSAGES.DONT_HAVE_PERMISSION);
       }
-      delete user.password;
-      return this.jwtService.sign(user);
+      const payload = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      };
+
+      console.log('Before return');
+
+      // Sign the JWT with the payload
+      return this.jwtService.sign(payload);
     }
     throw new UnauthorizedException(ERROR_MESSAGES.INVALID_PASSWORD);
   }

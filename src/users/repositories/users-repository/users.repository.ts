@@ -97,7 +97,7 @@ export class UsersRepository {
   }
 
   async updateUserRole(id: string, role: Role): Promise<void> {
-    await this.usersRepository.update(id, { role });
+    await this.usersRepository.update(id, { role: role });
   }
 
   async getUserById(id: string): Promise<UserDto> {
@@ -106,6 +106,16 @@ export class UsersRepository {
     });
     if (!entity) {
       throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return entity;
+  }
+
+  async getUserByEmail(email: string): Promise<UserEntity> {
+    const entity = await this.usersRepository.findOne({
+      where: { email },
+    });
+    if (!entity) {
+      throw new NotFoundException(`User with email ${email} not found`);
     }
     return entity;
   }
