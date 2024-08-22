@@ -14,6 +14,7 @@ import {
   ApiOperation,
   ApiTags,
   ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CategoryDto } from './dto/category.dto';
@@ -21,9 +22,15 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UuidParamDto } from './dto/uuid-param.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryInListDto } from './dto/category-in-list.dto';
+import { UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtGuard } from 'src/auth/guards/jwt.quard';
 
 @ApiTags('Categories')
 @Controller('categories')
+@UseGuards(JwtGuard)
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
