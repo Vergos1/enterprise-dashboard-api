@@ -12,6 +12,7 @@ import { RolesModule } from './roles/roles.module';
 import { ContentManagementModule } from './content-management/content-management.module';
 import { CategoriesModule } from './categories/categories.module';
 import { QuestionsModule } from './questions/questions.module';
+import { AiPromptsModule } from './ai-prompts/ai-prompts.module';
 import databaseConfig from './database/config/database.config';
 import authConfig from './auth/config/auth.config';
 
@@ -40,6 +41,7 @@ const configModule: DynamicModule = ConfigModule.forRoot({
     ContentManagementModule,
     CategoriesModule,
     QuestionsModule,
+    AiPromptsModule,
   ],
   controllers: [],
   providers: [AppService],
