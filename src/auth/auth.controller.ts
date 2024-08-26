@@ -16,6 +16,7 @@ import {
   ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
+import { AuthResDto } from './dto/auth-res.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -36,11 +37,12 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'Returns the authenticated user JWT',
+    type: AuthResDto,
   })
   @ApiUnauthorizedResponse({ description: ERROR_MESSAGES.INVALID_PASSWORD })
   @ApiNotFoundResponse({ description: ERROR_MESSAGES.USER_NOT_FOUND })
   @ApiForbiddenResponse({ description: ERROR_MESSAGES.DONT_HAVE_PERMISSION })
-  login(@Req() req: Request) {
-    return req.user;
+  login(@Req() req: Request): Promise<AuthResDto> {
+    return req.user as Promise<AuthResDto>;
   }
 }
