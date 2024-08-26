@@ -11,6 +11,7 @@ import { AuthDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
 import { UserStatus } from 'src/users/constants/user-status.enum';
+import { AuthResDto } from './dto/auth-res.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser({ email, password }: AuthDto): Promise<any> {
+  async validateUser({ email, password }: AuthDto): Promise<AuthResDto> {
     const user = await this.usersService.findOneByEmail(email);
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -40,10 +41,14 @@ export class AuthService {
         status: user.status,
       };
 
-      console.log('Before return');
+      const shortUserInfo = await this.usersService.getUserShortInfoById(
+        user.id,
+      );
+      const response = new AuthResDto();
+      response.token = this.jwtService.sign(payload);
+      response.user = shortUserInfo;
 
-      // Sign the JWT with the payload
-      return this.jwtService.sign(payload);
+      return response;
     }
     throw new UnauthorizedException(ERROR_MESSAGES.INVALID_PASSWORD);
   }
