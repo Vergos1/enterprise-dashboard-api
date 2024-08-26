@@ -48,7 +48,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get user by id' })
   @ApiOkResponse({ description: 'Get user by id', type: UserInfoDto })
   async getUserById(@Param('id') id: string): Promise<UserInfoDto> {
-    return this.usersService.gelUserInfoById(id);
+    return this.usersService.getUserInfoById(id);
   }
 
   @Get('export')
