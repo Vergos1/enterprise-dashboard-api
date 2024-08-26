@@ -13,6 +13,7 @@ import { UserInfoDto } from './dto/userInfo.dto';
 import { UserInspirationsRepository } from './repositories/user-inspirations-repository/userInspirations.repository';
 import { CategoriesRepository } from '../categories/repositories/categories.repository';
 import { UserEntity } from './entities/user.entity';
+import { ShortUserInfoDto } from 'src/auth/dto/auth-res.dto';
 
 @Injectable()
 export class UsersService {
@@ -81,7 +82,7 @@ export class UsersService {
     return csvContent;
   }
 
-  async gelUserInfoById(id: string): Promise<UserInfoDto> {
+  async getUserInfoById(id: string): Promise<UserInfoDto> {
     const user = await this.usersRepository.getUserInfoById(id);
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -113,6 +114,21 @@ export class UsersService {
         return { id: category.id, name: category.name };
       }),
       trustedContact,
+    };
+  }
+
+  async getUserShortInfoById(id: string): Promise<ShortUserInfoDto> {
+    const user = await this.usersRepository.getUserInfoById(id);
+
+    if (!user) {
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+    const { profile, email } = user;
+
+    return {
+      email: email || '',
+      firstName: profile?.firstName || '',
+      lastName: profile?.lastName || '',
     };
   }
 }
