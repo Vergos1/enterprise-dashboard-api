@@ -109,14 +109,25 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
-    const { id: userId, email, status, profile, trustedContact } = user;
+    const {
+      id: userId,
+      email,
+      status,
+      profile,
+      trustedContact,
+      subscriptionType,
+      totalAudioDuration,
+      questionsCount,
+    } = user;
     const { firstName, lastName, birthDate } = profile;
 
-    const voiceRecordsLength =
-      await this.usersRepository.getVoiceRecordsLength(userId);
+    // you can use this code to get the total duration of all audio records
+    // const totalAudioDuration =
+    //   await this.usersRepository.getVoiceRecordsLength(userId);
 
-    const questionsAmount =
-      await this.usersRepository.getQuestionsAmount(userId);
+    // you can use this code to get the total amount of questions
+    // const questionsCount =
+    //   await this.usersRepository.getQuestionsAmount(userId);
 
     const categoriesIds =
       await this.userInspirationsRepository.getUserCategoriesIds(userId);
@@ -129,9 +140,10 @@ export class UsersService {
       firstName,
       lastName,
       status,
+      subscriptionType,
       birthDate,
-      voiceRecordsLength,
-      questionsAmount,
+      totalAudioDuration,
+      questionsCount,
       categories: categiories.map((category) => {
         return { id: category.id, name: category.name };
       }),
