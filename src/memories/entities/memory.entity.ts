@@ -1,3 +1,5 @@
+import { UserEntity } from '../../users/entities/user.entity';
+import { TagEntity } from './tag.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,10 +11,13 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from '../../users/entities/user.entity';
-import { TagEntity } from './tag.entity';
 
 export type IMemoryRelations = 'sharedWith';
+export enum MemoryStatus {
+  Reviewed = 'reviewed',
+  Unreviewed = 'unreviewed',
+  Blocked = 'blocked',
+}
 
 @Entity({
   name: 'memory',
@@ -32,7 +37,7 @@ export class MemoryEntity {
   @Column({ nullable: true })
   audioUrl: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'float' })
   audioRecordingLength: number;
 
   @Column({
@@ -88,4 +93,11 @@ export class MemoryEntity {
     onDelete: 'CASCADE',
   })
   sharedWith: UserEntity[];
+
+  @Column({
+    type: 'enum',
+    enum: MemoryStatus,
+    default: MemoryStatus.Unreviewed,
+  })
+  status: MemoryStatus;
 }
