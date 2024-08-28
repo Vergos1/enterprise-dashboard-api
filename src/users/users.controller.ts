@@ -21,7 +21,14 @@ import { UsersService } from './users.service';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { UserInListDto } from './dto/userInList.dto';
 import { UserInfoDto } from './dto/userInfo.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.quard';
+import { JwtGuard } from '../auth/guards/jwt.quard';
+import { PaginatedList } from '../pagination/pagination.options';
+import { CreatePaginatedDto } from '../pagination/pagination.options';
+
+const PaginatedUsersDto = CreatePaginatedDto(
+  UserInListDto,
+  'PaginatedUsersResponseDto',
+);
 
 @ApiTags('Admin User Management')
 @Controller('users')
@@ -36,11 +43,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Search and filter users' })
   @ApiOkResponse({
     description: 'Get filtered users list',
-    type: [UserInListDto],
+    type: PaginatedUsersDto,
   })
   async getUsers(
-    @Query(ValidationPipe) query: GetUsersDto,
-  ): Promise<UserInListDto[]> {
+    @Query() query: GetUsersDto,
+  ): Promise<PaginatedList<UserInListDto>> {
     return this.usersService.getUsers(query);
   }
 
