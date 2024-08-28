@@ -14,6 +14,11 @@ import { UserInspirationsRepository } from './repositories/user-inspirations-rep
 import { CategoriesRepository } from '../categories/repositories/categories.repository';
 import { UserEntity } from './entities/user.entity';
 import { ShortUserInfoDto } from 'src/auth/dto/auth-res.dto';
+import {
+  PaginatedList,
+  PageMetaData,
+  PaginationOptionsDTO,
+} from 'src/pagination/pagination.options';
 
 @Injectable()
 export class UsersService {
@@ -35,14 +40,25 @@ export class UsersService {
     return this.usersRepository.getUserByEmail(email);
   }
 
-  async getUsers(getUsers: GetUsersDto): Promise<UserInListDto[]> {
-    return this.usersRepository.getUsers(
+  async getUsers(getUsers: GetUsersDto): Promise<PaginatedList<UserInListDto>> {
+    const items = await this.usersRepository.getUsers(
       getUsers.search,
       getUsers.subscriptionType,
       getUsers.categories,
       getUsers.favoritesFilter,
       getUsers.status,
     );
+
+    const paginationOptions = new PaginationOptionsDTO();
+    paginationOptions.page = getUsers.page || 1;
+    paginationOptions.limit = getUsers.limit || 10;
+    const itemCount = items.length;
+    const pageMatadata = new PageMetaData({
+      itemCount,
+      paginationOptionsDTO: paginationOptions,
+    });
+
+    return new PaginatedList<UserInListDto>(items, pageMatadata);
   }
 
   async remove(id: string): Promise<void> {
@@ -62,7 +78,13 @@ export class UsersService {
   }
 
   async exportUsersToCsv(getUsers: GetUsersDto): Promise<string> {
-    const users = await this.getUsers(getUsers);
+    const users = await this.usersRepository.getUsers(
+      getUsers.search,
+      getUsers.subscriptionType,
+      getUsers.categories,
+      getUsers.favoritesFilter,
+      getUsers.status,
+    );
 
     const csvStringifier = createObjectCsvStringifier({
       header: [
