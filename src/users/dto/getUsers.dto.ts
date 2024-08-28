@@ -7,11 +7,12 @@ import {
   IsUUID,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Frequency } from '../entities/preferences.entity';
 import { FavoritesFilter } from '../constants/favorites-filter.enum';
 import { UserStatus } from '../constants/user-status.enum';
+import { SubscriptionType } from '../constants/subscription-type.enum';
+import { PaginationOptionsDTO } from 'src/pagination/pagination.options';
 
-export class GetUsersDto {
+export class GetUsersDto extends PaginationOptionsDTO {
   @ApiPropertyOptional({
     description: 'Search by first name, last name, or email',
   })
@@ -21,13 +22,13 @@ export class GetUsersDto {
 
   @ApiPropertyOptional({
     description: 'Filter by subscription type',
-    enum: Frequency,
+    enum: SubscriptionType,
   })
   @IsOptional()
-  @IsEnum(Frequency, {
-    message: `subscription Type must be one of the following values: ${Object.values(Frequency).join(', ')}`,
+  @IsEnum(SubscriptionType, {
+    message: `subscription Type must be one of the following values: ${Object.values(SubscriptionType).join(', ')}`,
   })
-  subscriptionType?: Frequency;
+  subscriptionType?: SubscriptionType;
 
   @ApiPropertyOptional({
     description: 'Filter by an array of category IDs',
