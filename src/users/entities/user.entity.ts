@@ -146,4 +146,15 @@ export class UserEntity {
 
   @OneToOne(() => TrustedContactEntity, (trustedContact) => trustedContact.user)
   trustedContact: TrustedContactEntity;
+
+  @Column({
+    nullable: false,
+    name: 'total_audio_duration',
+    default: 0,
+    type: 'float',
+  })
+  totalAudioDuration: number;
+
+  @Column({ nullable: false, name: 'questions_count', default: 0 })
+  questionsCount: number;
 }
