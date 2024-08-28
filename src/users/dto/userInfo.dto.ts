@@ -13,6 +13,7 @@ import {
 import { Frequency, WeekDays } from '../entities/preferences.entity';
 import { UserStatus } from '../constants/user-status.enum';
 import { TrustedContactDto } from './trustedContact.dto';
+import { SubscriptionType } from '../constants/subscription-type.enum';
 
 export class ProfileDto {
   @ApiProperty({ description: 'The first name of the user', example: 'John' })
@@ -138,22 +139,29 @@ export class UserInfoDto {
   birthDate?: Date;
 
   @ApiProperty({
-    description: 'The users voice records amount',
+    description: 'The users total audio duration',
     example: 0,
   })
-  voiceRecordsLength: number;
+  totalAudioDuration: number;
 
   @ApiProperty({
-    description: 'The users questions amount',
+    description: 'The users questions count',
     example: 0,
   })
-  questionsAmount: number;
+  questionsCount: number;
 
   @ApiProperty({
     description: 'The users categories',
     type: CategoryForUserInfoDto,
   })
   categories: CategoryForUserInfoDto[];
+
+  @ApiProperty({
+    description: 'The tariff plan of the user',
+    example: SubscriptionType.Free,
+    enum: SubscriptionType,
+  })
+  subscriptionType: SubscriptionType;
 
   @ApiProperty({
     type: TrustedContactDto,
