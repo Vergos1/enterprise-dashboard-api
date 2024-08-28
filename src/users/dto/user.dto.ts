@@ -14,6 +14,7 @@ import { Frequency, WeekDays } from '../entities/preferences.entity';
 import { Role } from '../../roles/roles.enum';
 import { UserStatus } from '../constants/user-status.enum';
 import { TrustedContactDto } from './trustedContact.dto';
+import { SubscriptionType } from '../constants/subscription-type.enum';
 
 // Profile DTO
 export class ProfileDto {
@@ -134,6 +135,13 @@ export class UserDto {
     example: 'User',
   })
   role: Role;
+
+  @ApiProperty({
+    description: 'The tariff plan of the user',
+    example: SubscriptionType.Free,
+    enum: SubscriptionType,
+  })
+  subscriptionType: SubscriptionType;
 
   @ApiProperty({
     type: ProfileDto,
