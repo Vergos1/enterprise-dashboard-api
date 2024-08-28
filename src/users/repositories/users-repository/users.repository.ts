@@ -8,11 +8,11 @@ import { EntityCondition } from '../../../utils/types/entity-condition.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IUserRelations } from '../../entities/user.entity';
 import { UserDto } from '../../dto/user.dto';
-import { Frequency } from '../../entities/preferences.entity';
 import { FavoritesFilter } from '../../constants/favorites-filter.enum';
 import { UserStatus } from '../../constants/user-status.enum';
 import { Role } from '../../../roles/roles.enum';
 import { UserInListDto } from '../../dto/userInList.dto';
+import { SubscriptionType } from '../../constants/subscription-type.enum';
 @Injectable()
 export class UsersRepository {
   constructor(
@@ -158,7 +158,7 @@ export class UsersRepository {
 
   async getUsers(
     search?: string,
-    subscriptionType?: Frequency,
+    subscriptionType?: SubscriptionType,
     categories?: string[],
     favoritesFilter?: FavoritesFilter,
     status?: UserStatus,
@@ -179,14 +179,11 @@ export class UsersRepository {
         );
       }
 
-      // Filter by subscription type (checks for any matching frequency)
+      // Filter by subscription type (checks for any matching subscription type)
       if (subscriptionType) {
-        queryBuilder.andWhere(
-          ':subscriptionType = ANY(preferences.frequency)',
-          {
-            subscriptionType,
-          },
-        );
+        queryBuilder.andWhere('user.subscriptionType = :subscriptionType', {
+          subscriptionType,
+        });
       }
 
       // Filter by multiple categories (checks if any inspiration category matches)
@@ -229,6 +226,7 @@ export class UsersRepository {
         email: user.email,
         avatar: user.profile?.avatar || null,
         role: user.role,
+        subscriptionType: user.subscriptionType,
         status: user.status,
       }));
     } catch (error) {
