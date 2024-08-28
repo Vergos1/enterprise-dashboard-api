@@ -16,6 +16,7 @@ import { TrustedContactEntity } from './trusted-contacts.entity';
 import { Exclude } from 'class-transformer';
 import { UserStatus } from '../constants/user-status.enum';
 import { Role } from '../../roles/roles.enum';
+import { SubscriptionType } from '../constants/subscription-type.enum';
 
 export type IUserRelations =
   | 'friends'
@@ -74,6 +75,13 @@ export class UserEntity {
     default: Role.User,
   })
   role: Role;
+
+  @Column({
+    type: 'enum',
+    enum: SubscriptionType,
+    default: SubscriptionType.Free,
+  })
+  subscriptionType: SubscriptionType;
 
   @Exclude()
   @Column({ nullable: true, default: '' })
