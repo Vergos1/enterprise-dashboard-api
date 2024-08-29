@@ -56,6 +56,14 @@ export class QuestionsRepository {
       .getOne();
   }
 
+  async getQuestionsByCategoryId(
+    categoryId: string,
+  ): Promise<QuestionEntity[]> {
+    return await this.questionEntityRepository.find({
+      where: { category: { id: categoryId } },
+    });
+  }
+
   async update(
     id: string,
     question: Partial<QuestionEntity>,
