@@ -78,7 +78,7 @@ export class UsersService {
   }
 
   async exportUsersToCsv(getUsers: GetUsersDto): Promise<string> {
-    const users = await this.usersRepository.getUsers(
+    const users = await this.usersRepository.getUsersForExport(
       getUsers.search,
       getUsers.subscriptionType,
       getUsers.categories,
@@ -94,13 +94,14 @@ export class UsersService {
     });
 
     const records = users.map((user) => ({
-      firstName: user.firstName || '',
+      firstName: user.profile?.firstName || '',
       email: user.email,
     }));
 
     const csvContent =
       csvStringifier.getHeaderString() +
       csvStringifier.stringifyRecords(records);
+
     return csvContent;
   }
 
