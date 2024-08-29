@@ -4,6 +4,7 @@ import { QuestionEntity } from './entities/question.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionDto } from './dto/question.dto';
 import { CategoriesService } from '../categories/categories.service';
+import { createObjectCsvStringifier } from 'csv-writer';
 
 @Injectable()
 export class QuestionsService {
@@ -46,5 +47,33 @@ export class QuestionsService {
   async deleteQuestion(id: string): Promise<void> {
     const question = await this.getQuestion(id);
     await this.questionsRepository.deleteQuestion(question.id);
+  }
+
+  async exportQuestionsToCsv(categoryId: string): Promise<string> {
+    const questions =
+      await this.questionsRepository.getQuestionsByCategoryId(categoryId);
+
+    if (!questions || questions.length === 0) {
+      throw new NotFoundException(
+        `No questions found for category ID ${categoryId}`,
+      );
+    }
+
+    const csvStringifier = createObjectCsvStringifier({
+      header: [
+        { id: 'id', title: 'ID' },
+        { id: 'text', title: 'Question' },
+      ],
+    });
+
+    const records = questions.map((question) => ({
+      id: question.id,
+      text: question.text,
+    }));
+
+    return (
+      csvStringifier.getHeaderString() +
+      csvStringifier.stringifyRecords(records)
+    );
   }
 }
