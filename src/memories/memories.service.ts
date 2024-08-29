@@ -5,6 +5,7 @@ import { MemoryEntity } from './entities/memory.entity';
 import { ERROR_MESSAGES } from '../utils/constants/all-constants';
 import { MemoryInListDto } from './dto/memory-in-list.dto';
 import { GetMemoriesDto } from './dto/get-memories.dto';
+import { MemoryDetailsDto } from './dto/memory-details.dto';
 import {
   PaginatedList,
   PageMetaData,
@@ -17,6 +18,16 @@ export class MemoriesService {
 
   async findOneById(id: string): Promise<MemoryEntity> {
     return this.memoriesRepository.findOneById(id);
+  }
+
+  async getMemoryById(id: string): Promise<MemoryDetailsDto> {
+    const memory = await this.memoriesRepository.getMemoryById(id);
+
+    if (!memory) {
+      throw new NotFoundException(ERROR_MESSAGES.MEMORY_NOT_FOUND);
+    }
+
+    return memory;
   }
 
   async getMemories(
