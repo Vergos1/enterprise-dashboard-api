@@ -29,9 +29,9 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useLogger(app.get(AppLoggerService));
   app.enableCors({
-    origin: ['*'],
-    methods: 'GET, POST, PATCH, DELETE',
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    origin: '*',
+    methods: '*',
+    allowedHeaders: '*', 
     credentials: true,
   });
   app.useGlobalPipes(
