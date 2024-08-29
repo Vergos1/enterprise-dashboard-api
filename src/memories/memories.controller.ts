@@ -26,6 +26,7 @@ import {
   CreatePaginatedDto,
 } from '../pagination/pagination.options';
 import { ERROR_MESSAGES } from 'src/utils/constants/all-constants';
+import { MemoryDetailsDto } from './dto/memory-details.dto';
 
 const PaginatedMemoriesDto = CreatePaginatedDto(
   MemoryInListDto,
@@ -50,6 +51,14 @@ export class MemoriesController {
     @Query() query: GetMemoriesDto,
   ): Promise<PaginatedList<MemoryInListDto>> {
     return this.memoriesService.getMemories(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get memory by ID' })
+  @ApiOkResponse({ description: 'Get memory by ID', type: MemoryDetailsDto })
+  @ApiNotFoundResponse({ description: ERROR_MESSAGES.MEMORY_NOT_FOUND })
+  async getMemoryById(@Param('id') id: string): Promise<MemoryDetailsDto> {
+    return this.memoriesService.getMemoryById(id);
   }
 
   @Post('status/:id')
