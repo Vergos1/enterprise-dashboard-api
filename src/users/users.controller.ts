@@ -7,7 +7,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Query,
-  ValidationPipe,
+  Res,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,6 +24,7 @@ import { UserInfoDto } from './dto/userInfo.dto';
 import { JwtGuard } from '../auth/guards/jwt.quard';
 import { PaginatedList } from '../pagination/pagination.options';
 import { CreatePaginatedDto } from '../pagination/pagination.options';
+import { Response } from 'express';
 
 const PaginatedUsersDto = CreatePaginatedDto(
   UserInListDto,
@@ -51,19 +52,26 @@ export class UsersController {
     return this.usersService.getUsers(query);
   }
 
+  @Get('export')
+  @ApiOperation({ summary: 'Export filtered users to CSV' })
+  @ApiOkResponse({
+    description: 'CSV file of filtered users',
+  })
+  async exportUsersToCsv(
+    @Query() query: GetUsersDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    const csvContent = await this.usersService.exportUsersToCsv(query);
+    res.header('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
+    res.send(csvContent);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get user by id' })
   @ApiOkResponse({ description: 'Get user by id', type: UserInfoDto })
   async getUserById(@Param('id') id: string): Promise<UserInfoDto> {
     return this.usersService.getUserInfoById(id);
-  }
-
-  @Get('export')
-  @ApiOperation({ summary: 'Export filtered users to CSV' })
-  async exportUsersToCsv(
-    @Query(ValidationPipe) query: GetUsersDto,
-  ): Promise<string> {
-    return await this.usersService.exportUsersToCsv(query);
   }
 
   @Post('status/:id')
