@@ -29,7 +29,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.useLogger(app.get(AppLoggerService));
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:5174'],
+    origin: ['*'],
     methods: 'GET, POST, PATCH, DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization',
     credentials: true,
