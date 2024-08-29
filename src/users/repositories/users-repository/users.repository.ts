@@ -234,4 +234,72 @@ export class UsersRepository {
       throw new Error('An error occurred while fetching users.');
     }
   }
+
+  async getUsersForExport(
+    search?: string,
+    subscriptionType?: SubscriptionType,
+    categories?: string[],
+    favoritesFilter?: FavoritesFilter,
+    status?: UserStatus,
+  ): Promise<UserEntity[]> {
+    try {
+      const queryBuilder = this.usersRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .leftJoinAndSelect('user.preferences', 'preferences')
+        .leftJoinAndSelect('preferences.inspirations', 'inspirations')
+        .leftJoinAndSelect('user.favorites', 'favorites');
+
+      // Search by first name, last name, or email
+      if (search) {
+        queryBuilder.andWhere(
+          '(profile.firstName LIKE :search OR profile.lastName LIKE :search OR user.email LIKE :search)',
+          { search: `%${search}%` },
+        );
+      }
+
+      // Filter by subscription type (checks for any matching subscription type)
+      if (subscriptionType) {
+        queryBuilder.andWhere('user.subscriptionType = :subscriptionType', {
+          subscriptionType,
+        });
+      }
+
+      // Filter by multiple categories (checks if any inspiration category matches)
+      if (categories && categories.length > 0) {
+        queryBuilder.andWhere('inspirations.categoryId IN (:...categories)', {
+          categories,
+        });
+      }
+
+      // Filter by favorites
+      if (favoritesFilter) {
+        if (favoritesFilter === FavoritesFilter.Empty) {
+          queryBuilder.andWhere('favorites.id IS NULL');
+        } else if (favoritesFilter === FavoritesFilter.Include) {
+          queryBuilder.andWhere('favorites.id IS NOT NULL');
+        }
+      }
+
+      // Filter by user status
+      if (status) {
+        queryBuilder.andWhere('user.status = :status', { status });
+      }
+
+      // Order by role: admins first
+      queryBuilder.addOrderBy(
+        `CASE 
+         WHEN user.role = 'admin' THEN 1 
+         ELSE 2 
+       END`,
+        'ASC',
+      );
+
+      // Execute query
+      return queryBuilder.getMany();
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw new Error('An error occurred while fetching users.');
+    }
+  }
 }
