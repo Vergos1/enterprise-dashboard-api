@@ -66,7 +66,7 @@ export class UserEntity {
   @Column({ nullable: false, default: false })
   activated: boolean;
 
-  @Column({ nullable: true, default: UserStatus.Active })
+  @Column({ nullable: true, default: UserStatus.Blocked })
   status: UserStatus;
 
   @Column({
