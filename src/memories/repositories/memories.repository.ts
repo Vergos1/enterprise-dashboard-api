@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MemoryStatus } from '../entities/memory.entity';
 import { MemoriesListType } from '../constants/memories-list-type.enum';
 import { MemoryInListDto } from '../dto/memory-in-list.dto';
+import { MemoryDetailsDto } from '../dto/memory-details.dto';
 
 export class MemoriesRepository {
   constructor(
@@ -51,6 +52,45 @@ export class MemoriesRepository {
       lastName: memory.user.profile?.lastName || null,
       status: memory.status,
     }));
+  }
+
+  async getMemoryById(id: string): Promise<MemoryDetailsDto | undefined> {
+    const memory = await this.memoryEntityRepository
+      .createQueryBuilder('memory')
+      .leftJoinAndSelect('memory.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('memory.tags', 'tags')
+      .select([
+        'memory.id',
+        'memory.name',
+        'memory.transcription',
+        'memory.imagesUrls',
+        'memory.status',
+        'user.id',
+        'user.email',
+        'profile.firstName',
+        'profile.lastName',
+        'tags.id',
+        'tags.name',
+      ])
+      .where('memory.id = :id', { id })
+      .getOne();
+
+    if (!memory) {
+      return undefined;
+    }
+
+    return {
+      id: memory.id,
+      name: memory.name,
+      transcription: memory.transcription,
+      imagesUrls: memory.imagesUrls,
+      tags: memory.tags.map((tag) => ({ id: tag.id, name: tag.name })),
+      userId: memory.user.id,
+      email: memory.user.email,
+      firstName: memory.user.profile?.firstName || '',
+      lastName: memory.user.profile?.lastName || '',
+    };
   }
 
   async udpdateMemoryStatus(id: string, status: MemoryStatus): Promise<void> {
