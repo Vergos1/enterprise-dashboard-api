@@ -1,11 +1,13 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   ValidationPipe,
   Param,
   Put,
   Delete,
+  Res,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -23,6 +25,7 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 import { UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtGuard } from 'src/auth/guards/jwt.quard';
+import { Response } from 'express';
 
 @ApiTags('Questions')
 @Controller('questions')
@@ -31,6 +34,27 @@ import { JwtGuard } from 'src/auth/guards/jwt.quard';
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
+
+  @Get('export/:categoryId')
+  @ApiOperation({
+    summary: 'Export inspiration questions to CSV by category ID',
+  })
+  @ApiOkResponse({
+    description: 'CSV file of inspiration questions',
+  })
+  async exportQuestionsToCsv(
+    @Param('categoryId') categoryId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const csvContent =
+      await this.questionsService.exportQuestionsToCsv(categoryId);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="questions_${categoryId}.csv"`,
+    );
+    res.send(csvContent);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new question' })
@@ -46,7 +70,7 @@ export class QuestionsController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update category' })
+  @ApiOperation({ summary: 'Update question' })
   @ApiOkResponse({
     description: 'Successfully updated category.',
     type: QuestionDto,
