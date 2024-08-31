@@ -74,39 +74,54 @@ export class CategoriesService {
     updateCategoryDto: UpdateCategoryDto,
   ): Promise<CategoryEntity> {
     const { name, parentCategoryId } = updateCategoryDto;
-    const category = await this.getCategoryById(id);
-    category.name = name || category.name;
 
+    const category = await this.getCategoryById(id);
+
+    // Update the category name if provided
+    if (name) {
+      category.name = name;
+    }
+
+    // Check if the category is trying to be its own parent
     if (parentCategoryId === id) {
       throw new BadRequestException('Category cannot be its own parent.');
     }
 
-    if (parentCategoryId && parentCategoryId === category.parentCategory?.id) {
-      return await this.categoriesRepository.update(id, category);
+    // Handle parent category update if needed
+    if (parentCategoryId !== category.parentCategory?.id) {
+      const newParentCategory = parentCategoryId
+        ? await this.getParentCategoryById(parentCategoryId)
+        : null;
+
+      if (newParentCategory) {
+        // Add the category to the new parent category's subcategories
+        newParentCategory.subcategories.push(category);
+        await this.categoriesRepository.update(
+          newParentCategory.id,
+          newParentCategory,
+        );
+      }
+
+      // Remove the category from the old parent category's subcategories
+      if (category.parentCategory) {
+        const oldParentCategory = await this.getParentCategoryById(
+          category.parentCategory.id,
+        );
+        oldParentCategory.subcategories =
+          oldParentCategory.subcategories.filter(
+            (subCategory) => subCategory.id !== category.id,
+          );
+        await this.categoriesRepository.update(
+          oldParentCategory.id,
+          oldParentCategory,
+        );
+      }
+
+      // Update the parent category reference in the category entity
+      category.parentCategory = newParentCategory;
     }
 
-    const newParentCategory =
-      await this.getParentCategoryById(parentCategoryId);
-    const oldParentCategory = await this.getCategoryById(
-      category.parentCategory?.id,
-    );
-
-    category.parentCategory = newParentCategory || category.parentCategory;
-
-    const result = await this.categoriesRepository.update(id, category);
-
-    newParentCategory.subcategories.push(category);
-    await this.categoriesRepository.update(
-      newParentCategory.id,
-      newParentCategory,
-    );
-
-    oldParentCategory.subcategories = oldParentCategory.subcategories.filter(
-      (subCategory) => subCategory.id !== category.id,
-    );
-
-    await this.categoriesRepository.update(id, category);
-
-    return result;
+    // Save the updated category
+    return await this.categoriesRepository.update(id, category);
   }
 }
