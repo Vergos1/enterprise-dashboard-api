@@ -38,16 +38,19 @@ export class CategoryEntity {
 
   @ManyToOne(() => CategoryEntity, (category) => category.subcategories, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   parentCategory: CategoryEntity;
 
   @OneToMany(() => CategoryEntity, (category) => category.parentCategory, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   subcategories: CategoryEntity[];
 
   @OneToMany(() => QuestionEntity, (question) => question.category, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   questions: QuestionEntity[];
 }
