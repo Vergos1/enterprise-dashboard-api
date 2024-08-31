@@ -40,8 +40,12 @@ export class UsersService {
     return this.usersRepository.getUserByEmail(email);
   }
 
-  async getUsers(getUsers: GetUsersDto): Promise<PaginatedList<UserInListDto>> {
+  async getUsers(
+    getUsers: GetUsersDto,
+    id: string,
+  ): Promise<PaginatedList<UserInListDto>> {
     const items = await this.usersRepository.getUsers(
+      id,
       getUsers.search,
       getUsers.subscriptionType,
       getUsers.categories,
