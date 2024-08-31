@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { IsNull, Repository, In } from 'typeorm';
@@ -34,7 +34,25 @@ export class CategoriesRepository {
     id: string,
     category: Partial<CategoryEntity>,
   ): Promise<CategoryEntity> {
-    await this.categoryEntityRepository.update(id, category);
+    // First, find the existing category to ensure it exists
+    const existingCategory = await this.categoryEntityRepository.findOne({
+      where: { id },
+    });
+
+    if (!existingCategory) {
+      throw new NotFoundException(`Category with ID ${id} not found.`);
+    }
+
+    // Update the category fields
+    const updatedCategory = {
+      ...existingCategory,
+      ...category, // This will overwrite existing fields with the new ones
+    };
+
+    // Save the updated category
+    await this.categoryEntityRepository.save(updatedCategory);
+
+    // Return the updated category by fetching it again to include all relations
     return await this.getById(id);
   }
 
