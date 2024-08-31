@@ -25,6 +25,8 @@ import { JwtGuard } from '../auth/guards/jwt.quard';
 import { PaginatedList } from '../pagination/pagination.options';
 import { CreatePaginatedDto } from '../pagination/pagination.options';
 import { Response } from 'express';
+import { User } from '../common/user.decorator';
+import { UserDto } from './dto/user.dto';
 
 const PaginatedUsersDto = CreatePaginatedDto(
   UserInListDto,
@@ -33,8 +35,8 @@ const PaginatedUsersDto = CreatePaginatedDto(
 
 @ApiTags('Admin User Management')
 @Controller('users')
-// @UseGuards(JwtGuard)
-// @ApiBearerAuth()
+@UseGuards(JwtGuard)
+@ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
@@ -47,9 +49,10 @@ export class UsersController {
     type: PaginatedUsersDto,
   })
   async getUsers(
+    @User() user: UserDto,
     @Query() query: GetUsersDto,
   ): Promise<PaginatedList<UserInListDto>> {
-    return this.usersService.getUsers(query);
+    return this.usersService.getUsers(query, user.id);
   }
 
   @Get('export')
