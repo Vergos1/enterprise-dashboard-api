@@ -157,6 +157,7 @@ export class UsersRepository {
   }
 
   async getUsers(
+    id: string,
     search?: string,
     subscriptionType?: SubscriptionType,
     categories?: string[],
@@ -170,6 +171,9 @@ export class UsersRepository {
         .leftJoinAndSelect('user.preferences', 'preferences')
         .leftJoinAndSelect('preferences.inspirations', 'inspirations')
         .leftJoinAndSelect('user.favorites', 'favorites');
+
+      // Exclude the current user
+      queryBuilder.andWhere('user.id != :id', { id });
 
       // Search by first name, last name, or email
       if (search) {
