@@ -4,7 +4,6 @@ import {
   IsString,
   IsArray,
   ArrayNotEmpty,
-  IsUUID,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { FavoritesFilter } from '../constants/favorites-filter.enum';
@@ -37,7 +36,6 @@ export class GetUsersDto extends PaginationOptionsDTO {
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
-  @IsUUID('4', { each: true })
   categories?: string[];
 
   @ApiPropertyOptional({
