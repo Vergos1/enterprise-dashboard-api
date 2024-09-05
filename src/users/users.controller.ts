@@ -35,7 +35,7 @@ const PaginatedUsersDto = CreatePaginatedDto(
 
 @ApiTags('Admin User Management')
 @Controller('users')
-@UseGuards(JwtGuard)
+// @UseGuards(JwtGuard)
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @UseInterceptors(ClassSerializerInterceptor)
