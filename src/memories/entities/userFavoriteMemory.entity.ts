@@ -10,11 +10,15 @@ export class UserFavoriteMemoryEntity {
   @PrimaryColumn({ name: 'memory_id' })
   memoryId: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.favorites)
+  @ManyToOne(() => UserEntity, (user) => user.favorites, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
   users: UserEntity[];
 
-  @ManyToOne(() => MemoryEntity, (memory) => memory.favoriteBy)
+  @ManyToOne(() => MemoryEntity, (memory) => memory.favoriteBy, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn([{ name: 'memory_id', referencedColumnName: 'id' }])
   memories: MemoryEntity[];
 }

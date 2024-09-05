@@ -12,7 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export type IMemoryRelations = 'sharedWith';
+export type IMemoryRelations = 'sharedWith' | 'user' | 'favoriteBy' | 'tags';
 export enum MemoryStatus {
   Reviewed = 'reviewed',
   Unreviewed = 'unreviewed',
