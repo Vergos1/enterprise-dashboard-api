@@ -1,5 +1,5 @@
 export enum SubscriptionType {
   Free = 'free',
-  Monthly = 'monthly',
-  Annual = 'annual',
+  Monthly = 'Moments Deluxe (Monthly)',
+  Annual = 'Moments Deluxe (Annual)',
 }

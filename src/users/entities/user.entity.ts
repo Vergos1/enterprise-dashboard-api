@@ -22,7 +22,10 @@ export type IUserRelations =
   | 'friends'
   | 'memories'
   | 'favorites'
-  | 'sharedMemories';
+  | 'sharedMemories'
+  | 'profile'
+  | 'preferences'
+  | 'notifications';
 
 @Entity({
   name: 'user',
