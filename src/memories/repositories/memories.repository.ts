@@ -90,6 +90,7 @@ export class MemoriesRepository {
       email: memory.user.email,
       firstName: memory.user.profile?.firstName || '',
       lastName: memory.user.profile?.lastName || '',
+      status: memory.status,
     };
   }
 
