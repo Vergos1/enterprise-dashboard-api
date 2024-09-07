@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsString, IsUUID, IsEnum } from 'class-validator';
 import { TagDto } from '../dto/tag.dto';
+import { MemoryStatus } from '../entities/memory.entity';
 
 export class MemoryDetailsDto {
   @ApiProperty({
@@ -56,4 +57,12 @@ export class MemoryDetailsDto {
   @ApiProperty({ description: 'Memory author last name', example: 'Doe' })
   @IsString()
   lastName: string;
+
+  @ApiProperty({
+    description: 'Status of the memory',
+    example: MemoryStatus.Unreviewed,
+    enum: MemoryStatus,
+  })
+  @IsEnum(MemoryStatus)
+  status: MemoryStatus;
 }
