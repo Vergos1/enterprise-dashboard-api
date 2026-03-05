@@ -1,59 +1,76 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Enterprise Dashboard API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Enterprise dashboard REST API built with NestJS, TypeORM, PostgreSQL and JWT authentication.
 
-  <p align="center"> Vuexy Admin back-end</p>
-    <p align="center">
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat&logo=nestjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 
-## Description
+## About
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository (TypeORM + PostgreSQL)
+Backend API for the [Enterprise Dashboard](https://github.com/Vergos1/enterprise-dashboard) admin panel. Built with NestJS, TypeORM and PostgreSQL. Features JWT authentication with Passport, Swagger API documentation, CSV export and Docker support.
 
-## Installation
+## Features
+
+- **JWT Authentication** — Passport + JWT + bcrypt password hashing
+- **TypeORM + PostgreSQL** — database management with migrations
+- **Swagger** — auto-generated API documentation
+- **CSV Export** — data export via `csv-writer`
+- **Docker** — Dockerfile and docker-compose for easy deployment
+- **Validation** — request validation via `class-validator` and `class-transformer`
+- **Unit + E2E tests** — Jest and Supertest
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| NestJS | Backend framework |
+| TypeScript | Type safety |
+| TypeORM | Database ORM |
+| PostgreSQL | Database |
+| Passport + JWT | Authentication |
+| Swagger | API documentation |
+| Docker | Containerization |
+| Jest + Supertest | Testing |
+| ESLint / Prettier | Code quality |
+
+## Getting Started
 
 ```bash
-$ npm install
+# Install dependencies
+npm install
+
+# Start in development mode
+npm run start:dev
+
+# Start in production mode
+npm run start:prod
+
+# Build
+npm run build
 ```
 
-## Running the app
+### Docker
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker-compose up
 ```
 
-## Test
+## Testing
 
 ```bash
-# unit tests
-$ npm run test
+# Unit tests
+npm run test
 
-# e2e tests
-$ npm run test:e2e
+# E2E tests
+npm run test:e2e
 
-# test coverage
-$ npm run test:cov
+# Coverage
+npm run test:cov
 ```
 
-## Support
+## Author
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Developed by **Ihor Yanchuk**
+[Portfolio](https://github.com/Vergos1) · [GitHub](https://github.com/Vergos1)
