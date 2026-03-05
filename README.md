@@ -72,5 +72,6 @@ npm run test:cov
 
 ## Author
 
-Developed by **Ihor Yanchuk**
-[Portfolio](https://github.com/Vergos1) · [GitHub](https://github.com/Vergos1)
+Developed by **Ihor Yanchuk** · **vhuser**
+
+[Portfolio](https://portfolio-v3-coral-theta.vercel.app/) · [GitHub](https://github.com/Vergos1) · [vhuser](https://github.com/vhuser)
